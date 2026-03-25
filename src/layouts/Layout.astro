@@ -159,7 +159,7 @@ const bannerOffset =
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
 		<Analytics />
-		<canvas id="live2d-canvas" style="position:fixed;bottom:0;left:20px;z-index:999;width:400px;height:550px;pointer-events:auto;cursor:pointer;"></canvas>
+		<canvas id="live2d-canvas" style="position:fixed;bottom:0;left:20px;z-index:999;width:400px;height:550px;pointer-events:auto;cursor:pointer;" class="hidden md:block"></canvas>
 		<script>
 			import { LAppDelegate } from '@/live2d/demo/lappdelegate';
 
