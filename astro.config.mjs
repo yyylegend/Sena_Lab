@@ -154,6 +154,18 @@ export default defineConfig({
 		],
 	},
 	vite: {
+		resolve: {
+			alias: {
+				'@framework': '/src/live2d/framework',
+			},
+		},
+		optimizeDeps: {
+			esbuildOptions: {
+				// Live2D SDK TS files use interface imports without 'import type'
+				// ignoreAnnotations allows esbuild to handle them without errors
+				ignoreAnnotations: true,
+			},
+		},
 		build: {
 			rollupOptions: {
 				onwarn(warning, warn) {

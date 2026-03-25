@@ -17,7 +17,8 @@
       "@utils/*": ["src/utils/*"],
       "@i18n/*": ["src/i18n/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@framework/*": ["src/live2d/framework/*"]
     }
   },
   "include": ["src/**/*"]

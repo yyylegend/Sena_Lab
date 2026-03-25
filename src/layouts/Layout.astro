@@ -78,6 +78,7 @@ const bannerOffset =
 	  data-overlayscrollbars-initialize
 >
 	<head>
+		<script src="https://pub-22e5f59fa07b495ba05ab1f2e90668a1.r2.dev/live2dcubismcore.min.js" is:inline></script>
 
 		<title>{pageTitle}</title>
 
@@ -158,6 +159,19 @@ const bannerOffset =
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
 		<Analytics />
+		<canvas id="live2d-canvas" style="position:fixed;bottom:0;left:20px;z-index:999;width:400px;height:550px;pointer-events:auto;cursor:pointer;"></canvas>
+		<script>
+			import { LAppDelegate } from '@/live2d/demo/lappdelegate';
+
+			window.addEventListener('load', () => {
+				if (!LAppDelegate.getInstance().initialize()) return;
+				LAppDelegate.getInstance().run();
+			}, { passive: true });
+
+			window.addEventListener('beforeunload', () => {
+				LAppDelegate.releaseInstance();
+			}, { passive: true });
+		</script>
 	</body>
 </html>
 
