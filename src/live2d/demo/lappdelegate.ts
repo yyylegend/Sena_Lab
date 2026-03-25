@@ -116,15 +116,18 @@ export class LAppDelegate {
         return;
       }
 
-      // 時間更新
-      LAppPal.updateTime();
+      // ページが非表示のときはスキップ
+      if (!document.hidden) {
+        // 時間更新
+        LAppPal.updateTime();
 
-      for (let i = 0; i < this._subdelegates.getSize(); i++) {
-        this._subdelegates.at(i).update();
+        for (let i = 0; i < this._subdelegates.getSize(); i++) {
+          this._subdelegates.at(i).update();
+        }
       }
 
-      // ループのために再帰呼び出し
-      requestAnimationFrame(loop);
+      // ループのために再帰呼び出し (30fps)
+      setTimeout(() => requestAnimationFrame(loop), 1000 / 30);
     };
     loop();
   }
