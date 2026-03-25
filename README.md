@@ -2,6 +2,8 @@
 
 > This is my personal blog built with the [Fuwari](https://github.com/saicaca/fuwari) template by [saicaca](https://github.com/saicaca). All credits for the theme go to the original author.
 
+> The Live2D widget is powered by the [Live2D Cubism SDK for Web](https://www.live2d.com/en/sdk/about/) (open-source framework). The Live2D model displayed is a purchased asset and is **not included** in this repository.
+
 ---
 
 # 🍥Fuwari
