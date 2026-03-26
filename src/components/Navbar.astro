@@ -59,6 +59,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
         <NavMenuPanel links={links}></NavMenuPanel>
         <DisplaySettings client:only="svelte"></DisplaySettings>
     </div>
+
 </div>
 
 <script>
@@ -102,6 +103,9 @@ function loadButtonScript() {
 }
 
 loadButtonScript();
+document.addEventListener('swup:page:view', () => {
+    loadButtonScript();
+});
 </script>
 
 {import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
