@@ -1,5 +1,5 @@
 ---
-title: 学习笔记--LangChain 官方课程 Module 1
+title: 4月1日学习笔记--LangChain 官方课程 Module 1
 published: 2026-04-01
 description: 'LangChain 官方课程 Module 1 笔记，覆盖模型初始化、Prompt 设计、工具、网络搜索、记忆与多模态输入'
 image: ''
