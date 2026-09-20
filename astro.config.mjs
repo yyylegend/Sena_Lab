@@ -30,6 +30,10 @@ export default defineConfig({
 	site: "https://www.yyylegend.com/",
 	base: "/",
 	trailingSlash: "always",
+	redirects: {
+		"/posts/为什么一个银行问答入口要分成rag和text2sql/": "/posts/银行问答系统的两条查询路径/",
+		"/posts/单卡22gb推理实验显存账与速度/": "/posts/22gb单卡推理实验记录/",
+	},
 	integrations: [
 		tailwind({
 			nesting: true,
