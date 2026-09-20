@@ -5,7 +5,7 @@ import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPosts, getSlug } from "@utils/content-utils";
+import { getRelatedPosts, getSeriesPosts, getSortedPosts, getSlug } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { render } from "astro:content";
 import { Icon } from "astro-icon/components";
@@ -13,11 +13,14 @@ import { licenseConfig } from "src/config";
 import Giscus from "@components/misc/Giscus.svelte";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
+import SeriesNav from "../../components/SeriesNav.astro";
+import RelatedPosts from "../../components/RelatedPosts.astro";
+import PostResources from "../../components/PostResources.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 
 export async function getStaticPaths() {
-	const blogEntries = await getSortedPosts();
+	const blogEntries = await getSortedPosts(true);
 	return blogEntries.map((entry) => ({
 		params: { slug: getSlug(entry) },
 		props: { entry },
@@ -26,6 +29,9 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(entry);
+const currentSlug = getSlug(entry);
+const seriesPosts = entry.data.series ? await getSeriesPosts(entry.data.series) : [];
+const relatedPosts = await getRelatedPosts(entry);
 
 const jsonLd = {
 	"@context": "https://schema.org",
@@ -105,6 +111,10 @@ const jsonLd = {
             <Markdown class="mb-6 markdown-content onload-animation">
                 <Content />
             </Markdown>
+
+            <PostResources metrics={entry.data.metrics} links={entry.data.links} />
+            <SeriesNav name={entry.data.series} posts={seriesPosts} currentSlug={currentSlug} />
+            <RelatedPosts posts={relatedPosts} />
 
             {licenseConfig.enable && <License title={entry.data.title} slug={getSlug(entry)} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
 

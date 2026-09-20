@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getSlug } from "@utils/content-utils";
+import { getPostUrlBySlug } from "@utils/url-utils";
+
+interface Props {
+	posts: CollectionEntry<"posts">[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+	<section class="mb-6">
+		<div class="flex items-end justify-between mb-3 px-1">
+			<div>
+				<div class="text-sm text-black/45 dark:text-white/45">精选文章</div>
+				<h2 class="text-2xl font-bold text-black/85 dark:text-white/85">值得先读的几篇</h2>
+			</div>
+			<a href="/archive/" class="text-sm text-[var(--primary)] hover:underline">查看全部</a>
+		</div>
+		<div class="grid md:grid-cols-3 gap-4">
+			{posts.map((post) => (
+				<a
+					href={getPostUrlBySlug(getSlug(post))}
+					class="card-base rounded-[var(--radius-large)] px-5 py-5 transition hover:-translate-y-0.5 hover:shadow-lg"
+				>
+					<div class="text-xs text-[var(--primary)] mb-3">{post.data.category || "文章"}</div>
+					<h3 class="font-bold text-lg text-black/85 dark:text-white/85 mb-2">{post.data.title}</h3>
+					<p class="text-sm leading-6 text-black/55 dark:text-white/55 line-clamp-3">
+						{post.data.description || "打开文章查看完整内容。"}
+					</p>
+				</a>
+			))}
+		</div>
+	</section>
+)}

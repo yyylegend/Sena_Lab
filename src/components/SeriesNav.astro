@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getSlug } from "@utils/content-utils";
+import { getPostUrlBySlug } from "@utils/url-utils";
+
+interface Props {
+	name: string;
+	posts: CollectionEntry<"posts">[];
+	currentSlug: string;
+}
+
+const { name, posts, currentSlug } = Astro.props;
+---
+
+{posts.length > 1 && (
+	<section class="card-base rounded-[var(--radius-large)] px-6 md:px-9 py-5 mb-6">
+		<div class="text-sm text-black/45 dark:text-white/45 mb-1">系列文章</div>
+		<div class="font-bold text-lg text-black/80 dark:text-white/80 mb-4">{name}</div>
+		<nav class="flex flex-col gap-1" aria-label={name + " 系列文章"}>
+			{posts.map((post, index) => {
+				const slug = getSlug(post);
+				const current = slug === currentSlug;
+				return (
+					<a
+						href={getPostUrlBySlug(slug)}
+						aria-current={current ? "page" : undefined}
+						class:list={[
+							"flex items-start gap-3 rounded-lg px-3 py-2 text-sm transition",
+							current
+								? "bg-[var(--btn-regular-bg)] text-[var(--primary)] font-semibold"
+								: "text-black/65 dark:text-white/65 hover:bg-black/5 dark:hover:bg-white/10",
+						]}
+					>
+						<span class="font-mono text-xs opacity-50 pt-0.5">{String(index + 1).padStart(2, "0")}</span>
+						<span>{post.data.title}</span>
+					</a>
+				);
+			})}
+		</nav>
+	</section>
+)}

@@ -8,11 +8,24 @@ const postsCollection = defineCollection({
 		published: z.date(),
 		updated: z.date().optional(),
 		draft: z.boolean().optional().default(false),
+		archived: z.boolean().optional().default(false),
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),
 		tags: z.array(z.string()).optional().default([]),
 		category: z.string().optional().nullable().default(""),
 		lang: z.string().optional().default(""),
+		series: z.string().optional().default(""),
+		seriesOrder: z.number().int().optional(),
+		featured: z.boolean().optional().default(false),
+		featuredOrder: z.number().int().optional(),
+		metrics: z
+			.array(z.object({ value: z.string(), label: z.string() }))
+			.optional()
+			.default([]),
+		links: z
+			.array(z.object({ label: z.string(), url: z.string() }))
+			.optional()
+			.default([]),
 
 		/* For internal use */
 		prevTitle: z.string().default(""),

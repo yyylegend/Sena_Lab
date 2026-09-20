@@ -1,0 +1,47 @@
+---
+interface Metric {
+	value: string;
+	label: string;
+}
+
+interface LinkItem {
+	label: string;
+	url: string;
+}
+
+interface Props {
+	metrics: Metric[];
+	links: LinkItem[];
+}
+
+const { metrics, links } = Astro.props;
+---
+
+{(metrics.length > 0 || links.length > 0) && (
+	<div class="mb-6 flex flex-col gap-3">
+		{metrics.length > 0 && (
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+				{metrics.map((metric) => (
+					<div class="card-base rounded-xl px-4 py-3">
+						<div class="font-bold text-xl text-[var(--primary)]">{metric.value}</div>
+						<div class="text-xs text-black/45 dark:text-white/45 mt-1">{metric.label}</div>
+					</div>
+				))}
+			</div>
+		)}
+		{links.length > 0 && (
+			<div class="flex flex-wrap gap-2">
+				{links.map((link) => (
+					<a
+						href={link.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="btn-regular rounded-lg px-3 py-2 text-sm text-[var(--primary)]"
+					>
+						{link.label}
+					</a>
+				))}
+			</div>
+		)}
+	</div>
+)}

@@ -8,9 +8,10 @@ export function getSlug(entry: { id: string }): string {
 }
 
 // // Retrieve posts and sort them by publication date
-async function getRawSortedPosts() {
+async function getRawSortedPosts(includeArchived = false) {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+		const isPublic = import.meta.env.PROD ? data.draft !== true : true;
+		return isPublic && (includeArchived || data.archived !== true);
 	});
 
 	const sorted = allBlogPosts.sort((a, b) => {
@@ -21,8 +22,8 @@ async function getRawSortedPosts() {
 	return sorted;
 }
 
-export async function getSortedPosts() {
-	const sorted = await getRawSortedPosts();
+export async function getSortedPosts(includeArchived = false) {
+	const sorted = await getRawSortedPosts(includeArchived);
 
 	for (let i = 1; i < sorted.length; i++) {
 		sorted[i].data.nextSlug = getSlug(sorted[i - 1]);
@@ -39,8 +40,8 @@ export type PostForList = {
 	slug: string;
 	data: CollectionEntry<"posts">["data"];
 };
-export async function getSortedPostsList(): Promise<PostForList[]> {
-	const sortedFullPosts = await getRawSortedPosts();
+export async function getSortedPostsList(includeArchived = false): Promise<PostForList[]> {
+	const sortedFullPosts = await getRawSortedPosts(includeArchived);
 
 	// delete post.body
 	const sortedPostsList = sortedFullPosts.map((post) => ({
@@ -50,6 +51,59 @@ export async function getSortedPostsList(): Promise<PostForList[]> {
 
 	return sortedPostsList;
 }
+
+export async function getSeriesPosts(series: string) {
+	const posts = await getRawSortedPosts(true);
+	return posts
+		.filter((post) => post.data.series === series)
+		.sort((a, b) => {
+			const orderA = a.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+			const orderB = b.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+			if (orderA !== orderB) return orderA - orderB;
+			return a.data.published > b.data.published ? -1 : 1;
+		});
+}
+
+export async function getFeaturedPosts() {
+	return (await getRawSortedPosts(false))
+		.filter((post) => post.data.featured === true)
+		.sort((a, b) => {
+			const orderA = a.data.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+			const orderB = b.data.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+			if (orderA !== orderB) return orderA - orderB;
+			return a.data.published > b.data.published ? -1 : 1;
+		})
+		.slice(0, 3);
+}
+
+export async function getRelatedPosts(
+	current: CollectionEntry<"posts">,
+	limit = 3,
+) {
+	const currentTags = new Set(current.data.tags);
+	const posts = await getRawSortedPosts(false);
+
+	return posts
+		.filter((post) => post.id !== current.id)
+		.map((post) => {
+			const sharedTags = post.data.tags.filter((tag) => currentTags.has(tag)).length;
+			const sameCategory =
+				current.data.category &&
+				post.data.category === current.data.category
+					? 3
+					: 0;
+			const sameSeries =
+				current.data.series &&
+				post.data.series === current.data.series
+					? 5
+					: 0;
+			return { post, score: sharedTags + sameCategory + sameSeries };
+		})
+		.filter(({ score }) => score > 0)
+		.sort((a, b) => b.score - a.score)
+		.slice(0, limit)
+		.map(({ post }) => post);
+}
 export type Tag = {
 	name: string;
 	count: number;
@@ -57,7 +111,8 @@ export type Tag = {
 
 export async function getTagList(): Promise<Tag[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+		const isPublic = import.meta.env.PROD ? data.draft !== true : true;
+		return isPublic && data.archived !== true;
 	});
 
 	const countMap: { [key: string]: number } = {};
@@ -84,7 +139,8 @@ export type Category = {
 
 export async function getCategoryList(): Promise<Category[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+		const isPublic = import.meta.env.PROD ? data.draft !== true : true;
+		return isPublic && data.archived !== true;
 	});
 	const count: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
