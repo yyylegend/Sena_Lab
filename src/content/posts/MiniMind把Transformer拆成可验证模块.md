@@ -1,7 +1,7 @@
 ---
-title: 从一个 Token 开始，拆开理解 Transformer
+title: 参考 MiniMind，从一个 Token 开始理解 Transformer
 published: 2026-09-12
-description: 参考 MiniMind 的结构，把 Decoder-only Transformer 拆成可单独理解、组装和验证的模块。
+description: 参考 MiniMind 的结构，从一个 Token 的流动开始拆解 Decoder-only Transformer。
 tags: [MiniMind, Transformer, PyTorch, 模型训练]
 category: 模型训练
 featured: true
@@ -15,6 +15,10 @@ links:
 draft: false
 lang: zh_CN
 ---
+
+这篇笔记参考的是开源项目 [MiniMind](https://github.com/jingyaogong/minimind)。MiniMind 把一个小型语言模型的结构和训练流程放在一起，适合顺着代码看 Token 是怎样经过每一层，最后变成下一个 Token 的预测。
+
+文中的代码和测试来自独立实验项目 [MiniMind Labs](https://github.com/yyylegend/minimind-labs)。它参考了 MiniMind 的结构，但不是官方仓库；拆开模块的目的，是先把每一步看明白，再把它们重新组装起来。
 
 :::important
 **学习方式**
@@ -47,7 +51,7 @@ lang: zh_CN
 ```
 
 先不要急着记住所有名词。我们只跟踪其中一个 Token，比如“猫”。
-接下来会进入Transformer的关键流水线。
+接下来会进入 Transformer 的关键流水线。
 
 ## 2. “猫”先变成一个向量
 
@@ -64,7 +68,7 @@ Tokenizer 先把文字变成编号：
 91 → [0.2, -0.7, 0.4, ...]
 ```
 
-真实 MiniMind 中，一个序列的形状类似：
+在 MiniMind 这类模型中，一个序列的形状类似：
 
 ```text
 [batch, seq_len, hidden_size]

@@ -21,6 +21,10 @@ lang: zh_CN
 > 硬件：魔改 RTX 2080 Ti 22GB（Turing / SM75，22528 MiB，616 GB/s）
 > 相关：[单卡 22GB 推理实验](/posts/22gb单卡推理实验记录/)（同卡的 vLLM 路线）
 
+llama.cpp 是一个在本地运行大语言模型的 C/C++ 推理项目，`llama-server` 则是在它之上提供 HTTP 接口的服务端。参数很多，但它们并不是互相独立的开关：模型大小、显存带宽、KV Cache 和上下文长度会一起决定最后的配置。
+
+这篇先从硬件约束出发，再解释 `-ngl`、上下文长度、KV Cache 精度和投机解码等参数。后面的命令只对文中这张 22GB 显卡和这些模型负责，不把一次实验结果当成通用结论。
+
 ## 三条硬约束
 
 所有参数都是这三条约束逼出来的。先记住约束，参数自己能推。
@@ -228,7 +232,7 @@ D:\llama.cpp\llama-server.exe -m "D:\UnslothWork\models\Qwen3.6-27B-Fable-Fus-71
 5. **SillyTavern 的 Post-History Instructions 用 system role 会触发 Jinja 报错**（`System message must be at the beginning`）。这个字段别用。
 6. **uncensored / abliterated 模型容易中英混杂**。根因是 abliteration 用的 refusal 数据集基本是英文的，在英文分布上拉伸权重时顺带污染了语言偏好。提示词是软约束，压不住权重层面的偏移。选型时看消融层数：消融层数越少、起始层越靠后，语言漂移越小（huihui UD 系列只消融 18~51 层，前 18 层完整保留）。
 
-## 待办
+## 后续验证
 
 - [ ] 验证 3.6 慢的原因：抓 `llama_speculative: accepted X/Y` 看接受率
 - [ ] 隔离变量验证 temp 对速度的影响（temp 1.0 vs 0.7，其余不变）
